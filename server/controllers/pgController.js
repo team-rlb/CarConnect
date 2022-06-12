@@ -61,12 +61,42 @@ pgController.scrapeCarInfo = (req, res, next) => {
   cheerioScrapeCarsCom = (url) => {
     axios(url)
     .then(response => {
+      
       const htmlData = response.data;
       const $ = cheerio.load(htmlData);
-      const price = $('.primary-price').html().slice(1).replace(/\D/g, '');
-      const mileage = $('.vehicle-card .vehicle-card-main .vehicle-details .mileage').html().replace(/\D/g, '');
+      // console.log('helooooo', 
+      //-------------------------------This Works ------------------------------------------------------------
+      // const arrayYolo = [];
+      // const tester = $('.vehicle-cards').map((i, el) => {
+      //   console.log('from cheerio.load', el)
+      //   // const vehicleCard = el
+        
+      //   const vehicleObj = {};
+      //   //vehicle-card   vehicle-card-with-reviews
+      //   const priceElement = $(el).find('.primary-price');
+      //   const mileageElement = $(el).find('.mileage');
+      //   const titleElement = $(el).find('.title');
+      //   vehicleObj.price = priceElement.text().trim().split('$').slice(1);
+      //   vehicleObj.mileage = mileageElement.text().trim().split(' mi.').slice(0, -1);
+      //   vehicleObj.title = titleElement.text().trim();
+      //   arrayYolo.push(priceElement.text().trim());
+      //   return vehicleObj;
+      // })
+        //-------------------------------This Works ------------------------------------------------------------
+      // console.log(' This is array Yolo', arrayYolo)
+  
+
+      // $('.vehicle-cards').reduce((acc, vehicleCard) => {
+      //   if(vehicleCard === $('.vehicle-card'))
+      // })
+      // console.log('this is vehicle cards', e)
+      console.log(tester[0])
+
+      //inside vehicle-cards class(contains all the prices and info for cars we grab the prices)
+      const price = $('.primary-price').html().slice(1).replace(/\D/g, ''); // extracts price number
+      const mileage = $('.vehicle-card .vehicle-card-main .vehicle-details .mileage').html().replace(/\D/g, ''); // extracts mileage number
       const [year, make, model] = $('.title').html().split(' ');
-      console.log(price, year, make, model, mileage);
+      // console.log(price, year, make, model, mileage); 
       const date = new Date();
       const dayDate = date.getDate();
       const monthDate = date.getMonth() + 1;
@@ -79,7 +109,7 @@ pgController.scrapeCarInfo = (req, res, next) => {
     })
     .catch(err => console.log(err));
   }
-
+  
   // cheerioScrapeCarsCom is working perfectly
   cheerioScrapeCarsCom(`https://www.cars.com/shopping/results/?dealer_id=&keyword=&list_price_max=&list_price_min=&makes[]=${make.toLowerCase()}&maximum_distance=200&mileage_max=&models[]=${make.toLowerCase()+'-'+model.toLowerCase()}&page_size=10&sort=list_price&stock_type=all&year_max=&year_min=${minYear}&zip=${zip}`);
 
