@@ -5,57 +5,49 @@ const cheerio = require('cheerio');
 
 const pgController = {};
 
-//this one is not working at all
-pgController.scraper = (req, res, next) => {
-//   const url = `https://www.cars.com/shopping/results/?dealer_id=&keyword=&list_price_max=&list_price_min=&makes[]=honda&maximum_distance=200&mileage_max=&models[]=honda-civic&page_size=10&sort=list_price&stock_type=all&year_max=&year_min=2015&zip=11201`;
-  const url = 'https://www.carvana.com/cars/honda-civic/filters/?cvnaid=eyJtb2RlbElkcyI6WzU2XSwiZnJlZURlbGl2ZXJ5IjpmYWxzZSwic29ydEJ5IjoiTG93ZXN0UHJpY2UifQ%3D%3D'
-  console.log('hi')
-  const scrape = async (url) => {
-    const browser = await puppeteer.launch({ headless: true });
-    const page = await browser.newPage();
-    await page.goto(url)
-    //const [el] = await page.$('#')
-    const data = await page.evaluate(() => {
-        const test = document.querySelector('span')
-    //   const array = [];
+// //this one is not working at all
+// pgController.scraper = (req, res, next) => {
+// //   const url = `https://www.cars.com/shopping/results/?dealer_id=&keyword=&list_price_max=&list_price_min=&makes[]=honda&maximum_distance=200&mileage_max=&models[]=honda-civic&page_size=10&sort=list_price&stock_type=all&year_max=&year_min=2015&zip=11201`;
+//   const url = 'https://www.carvana.com/cars/honda-civic/filters/?cvnaid=eyJtb2RlbElkcyI6WzU2XSwiZnJlZURlbGl2ZXJ5IjpmYWxzZSwic29ydEJ5IjoiTG93ZXN0UHJpY2UifQ%3D%3D'
+//   console.log('hi')
+//   const scrape = async (url) => {
+//     const browser = await puppeteer.launch({ headless: true });
+//     const page = await browser.newPage();
+//     await page.goto(url)
+//     //const [el] = await page.$('#')
+//     const data = await page.evaluate(() => {
+//         const test = document.querySelector('span')
+//     //   const array = [];
 
-      const price = document.querySelector('.price ').innerText.slice(1);
-    //   prices.forEach(price => array.push(price.innerText));
-      const [year, make, model] = document.querySelector('.year-make').innerText.split(' ');
-    // .tk-pane.middle-frame-pane div
-    // "price "
+//       const price = document.querySelector('.price ').innerText.slice(1);
+//     //   prices.forEach(price => array.push(price.innerText));
+//       const [year, make, model] = document.querySelector('.year-make').innerText.split(' ');
+//     // .tk-pane.middle-frame-pane div
+//     // "price "
       
-      const mileageDiv = document.querySelector('.trim-mileage').querySelectorAll('span');
-      const [mileage] = mileageDiv[1].innerText.split(' ');
-    //   mileages.forEach(mileage => array.push(mileage.innerText));
-    // page.click('.price ')
-      return {
-          price, year, make, model, mileage, url
-        // price, year, make, model, mileage, url
-      }
-    });
-    console.log('hi2', data)
+//       const mileageDiv = document.querySelector('.trim-mileage').querySelectorAll('span');
+//       const [mileage] = mileageDiv[1].innerText.split(' ');
+//     //   mileages.forEach(mileage => array.push(mileage.innerText));
+//     // page.click('.price ')
+//       return {
+//           price, year, make, model, mileage, url
+//         // price, year, make, model, mileage, url
+//       }
+//     });
     
-    // need title class for 'Year Make Model'
-    // need mileage class for mileage
-    // need primary-price class for price
-    // info needed for db: year, date, price, mileage, url, make, model
-   
-    
-    await browser.close();
-    res.locals.carData = data
-    return next();
+//     await browser.close();
+//     res.locals.carData = data
+//     return next();
 
- };
+//  };
 
- scrape();
+//  scrape();
 
-}
+// }
 
 
 pgController.scrapeCarInfo = (req, res, next) => {
-    // if data exists already in database, pull the data from database
-    // querParams would be the url basically
+    // if data exists already in database by the unique listing URL, pull the data from database
   const {make, model, minYear, zip} = req.body;
   //cheerioScrapeCarsCom one is working perfeclty
   cheerioScrapeCarsCom = (url) => {
@@ -64,45 +56,32 @@ pgController.scrapeCarInfo = (req, res, next) => {
       
       const htmlData = response.data;
       const $ = cheerio.load(htmlData);
-      // console.log('helooooo', 
-      //-------------------------------This Works ------------------------------------------------------------
-      // const arrayYolo = [];
-      // const tester = $('.vehicle-cards').map((i, el) => {
-      //   console.log('from cheerio.load', el)
-      //   // const vehicleCard = el
+      
+        const cars = [];
+        const scrape = $('.vehicle-cards').find('.vehicle-card').map((i, el) => {
         
-      //   const vehicleObj = {};
-      //   //vehicle-card   vehicle-card-with-reviews
-      //   const priceElement = $(el).find('.primary-price');
-      //   const mileageElement = $(el).find('.mileage');
-      //   const titleElement = $(el).find('.title');
-      //   vehicleObj.price = priceElement.text().trim().split('$').slice(1);
-      //   vehicleObj.mileage = mileageElement.text().trim().split(' mi.').slice(0, -1);
-      //   vehicleObj.title = titleElement.text().trim();
-      //   arrayYolo.push(priceElement.text().trim());
-      //   return vehicleObj;
-      // })
-        //-------------------------------This Works ------------------------------------------------------------
-      // console.log(' This is array Yolo', arrayYolo)
-  
+          const vehicleObj = {};
+          const priceElement = $(el).find('.primary-price');
+          const mileageElement = $(el).find('.mileage');
+          const image = $(el).find('.image-wrap').find('img').attr('data-src');
+          const titleElement = $(el).find('.title'); // title '2015 Honda Civic LX'
+          const url = `cars.com${$(el).find('a').attr('href')}`;
+          vehicleObj.num = i;
+          vehicleObj.price = Number(priceElement.text().replace(/\D/g, ''));
+          vehicleObj.image = image;
+          vehicleObj.mileage = Number(mileageElement.text().replace(/\D/g, ''));
+          [vehicleObj.year, vehicleObj.make, vehicleObj.model] = titleElement.text().split(' '); // [2015, Honda, Civic, LX]
+          vehicleObj.year = Number(vehicleObj.year);
+          vehicleObj.url = url;
+          cars.push(vehicleObj);
+    })
 
-      // $('.vehicle-cards').reduce((acc, vehicleCard) => {
-      //   if(vehicleCard === $('.vehicle-card'))
-      // })
-      // console.log('this is vehicle cards', e)
-      console.log(tester[0])
-
-      //inside vehicle-cards class(contains all the prices and info for cars we grab the prices)
-      const price = $('.primary-price').html().slice(1).replace(/\D/g, ''); // extracts price number
-      const mileage = $('.vehicle-card .vehicle-card-main .vehicle-details .mileage').html().replace(/\D/g, ''); // extracts mileage number
-      const [year, make, model] = $('.title').html().split(' ');
-      // console.log(price, year, make, model, mileage); 
       const date = new Date();
       const dayDate = date.getDate();
       const monthDate = date.getMonth() + 1;
       const yearDate = date.getFullYear();
       res.locals.carData = {
-        price, year, make, model, mileage, url,
+        cars,
         date: `${monthDate}/${dayDate}/${yearDate}`
       }
       return next();
@@ -113,30 +92,30 @@ pgController.scrapeCarInfo = (req, res, next) => {
   // cheerioScrapeCarsCom is working perfectly
   cheerioScrapeCarsCom(`https://www.cars.com/shopping/results/?dealer_id=&keyword=&list_price_max=&list_price_min=&makes[]=${make.toLowerCase()}&maximum_distance=200&mileage_max=&models[]=${make.toLowerCase()+'-'+model.toLowerCase()}&page_size=10&sort=list_price&stock_type=all&year_max=&year_min=${minYear}&zip=${zip}`);
 
-  //I haven't found a website that allows me get data and has a fancy url to work with
-  cheerioScrapeEdmunds = (url) => {
-    axios(url)
-      .then(response => {
-        const htmlData = response.data;
-        const $ = cheerio.load(htmlData);
-        const price = $('span[itemprop="price"]').html();
-        console.log(price);
-        res.status(200).send('done')
-        // .slice(1).replace(/\D/g, '') const mileage = $('.vehicle-card .vehicle-card-main .vehicle-details .mileage').html().replace(/\D/g, '');
-        // const [year, make, model] = $('.title').html().split(' ');
-        // console.log(price, year, make, model, mileage);
-        // const date = new Date();
-        // const dayDate = date.getDate();
-        // const monthDate = date.getMonth() + 1;
-        // const yearDate = date.getFullYear();
-        // res.locals.carData = {
-        //   price, year, make, model, mileage, url,
-        //   date: `${monthDate}/${dayDate}/${yearDate}`
-        // }
-        // return next();
-      })
-      .catch(err => console.log(err))
-  }
+  // //I haven't found a website that allows me get data and has a fancy url to work with
+  // cheerioScrapeEdmunds = (url) => {
+  //   axios(url)
+  //     .then(response => {
+  //       const htmlData = response.data;
+  //       const $ = cheerio.load(htmlData);
+  //       const price = $('span[itemprop="price"]').html();
+  //       console.log(price);
+  //       res.status(200).send('done')
+  //       // .slice(1).replace(/\D/g, '') const mileage = $('.vehicle-card .vehicle-card-main .vehicle-details .mileage').html().replace(/\D/g, '');
+  //       // const [year, make, model] = $('.title').html().split(' ');
+  //       // console.log(price, year, make, model, mileage);
+  //       // const date = new Date();
+  //       // const dayDate = date.getDate();
+  //       // const monthDate = date.getMonth() + 1;
+  //       // const yearDate = date.getFullYear();
+  //       // res.locals.carData = {
+  //       //   price, year, make, model, mileage, url,
+  //       //   date: `${monthDate}/${dayDate}/${yearDate}`
+  //       // }
+  //       // return next();
+  //     })
+  //     .catch(err => console.log(err))
+  // }
   
   //I haven't found a website that allows me get data and has a fancy url to work with
   // cheerioScrapeEdmunds(`https://www.carsdirect.com/used_cars/listings/honda/civic?zipcode=33157&dealerId=&distance=&yearFrom=&yearTo=&priceFrom=&priceTo=&qString=Honda%603%6023%600%600%60false%7CCivic%604%60253%600%600%60false%7C&keywords=&makeName=honda&modelName=civic&sortColumn=Price&sortDirection=ASC&searchGroupId=&lnk=&vehicleDetailLead=false&recentSearchId=12762496&pageNum=1`);
