@@ -8,6 +8,8 @@ router.get('/scrape',
   (req, res) => res.status(200).json({ carsComData: res.locals.carsComData, carGuruData: 'carGuru'})
 );
 
+router.post('/dataDisplay', pgController.getCarsComData, pgController.insertCarsComData)
+
 module.exports = router;
 
 // controller.scrapeCarInfo,
