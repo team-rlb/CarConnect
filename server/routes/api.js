@@ -1,11 +1,11 @@
 const express = require('express');
-const controller = require('../controllers/pgController');
+const pgController = require('../controllers/pgController');
 const router = express.Router();
 
 // routers to handle requests and invoke middleware functions that get executed by controller
 router.get('/scrape',
-controller.scrapeCarInfo,
-  (req, res) => res.status(200).json(res.locals.carData)
+  pgController.getCarsComData,
+  (req, res) => res.status(200).json({ carsComData: res.locals.carsComData, carGuruData: 'carGuru'})
 );
 
 module.exports = router;
