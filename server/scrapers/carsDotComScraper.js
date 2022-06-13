@@ -32,14 +32,15 @@ const carsDotComScraper = async (make, model, minYear, zip) => {
         vehicleObj.zip = Number(zip);
         vehicleObj.date = actualDate;
         cars.push(vehicleObj);
-    })
-  })
-  .catch(err => console.log(err, 'Error in carsDotComScraper function'));
+        
+        })
+      })
+      .catch(err => console.log(err, 'Error in carsDotComScraper function'));
 }
 
 // cheerioScrapeCarsCom is working perfectly
- await cheerioScrapeCarsCom(`https://www.cars.com/shopping/results/?dealer_id=&keyword=&list_price_max=&list_price_min=&makes[]=${make.toLowerCase()}&maximum_distance=50&mileage_max=&models[]=${make.toLowerCase()+'-'+model.toLowerCase()}&page_size=100&sort=list_price&stock_type=all&year_max=&year_min=${minYear}&zip=${zip}`);
- console.log('cars', cars, 'end cars')
+ await cheerioScrapeCarsCom(`https://www.cars.com/shopping/results/?dealer_id=&keyword=&list_price_max=&list_price_min=&makes[]=${make.toLowerCase()}&maximum_distance=50&mileage_max=&models[]=${make.toLowerCase()+'-'+model.toLowerCase()}&page_size=10&sort=list_price&stock_type=all&year_max=&year_min=${minYear}&zip=${zip}`);
+//  console.log('cars', cars, 'end cars')
  
  return cars;
 }
