@@ -2,6 +2,8 @@ const db = require('../models/pgModels.js');
 const puppeteer = require('puppeteer');
 // carsDotComScraper = require('../scrapers/carsDotComScraper')
 const carsDotComScraper = require('../scrapers/carsDotComScraper.js')
+const autoTraderScraper = require('../scrapers/autoTraderScraper.js')
+const carGurusScraper = require('../scrapers/carGurusScraper.js')
 
 
 const pgController = {};
@@ -12,6 +14,20 @@ pgController.getCarsComData = async (req, res, next) => {
 
  return next();
 }
+
+pgController.getAutoTraderData = async (req, res, next) => {
+  const { make, model, minYear, zip } = req.body;
+  res.locals.autoTraderData = await autoTraderScraper(make, model, minYear, zip);
+ 
+  return next();
+ }
+
+ pgController.getCarGurusData = async (req, res, next) => {
+  const { make, model, minYear, zip } = req.body;
+  res.locals.autoTraderData = await carGurusScraper(make, model, minYear, zip);
+ 
+  return next();
+ }
 
 // pgController.getCarGuruData = (req, res, next) => {
 //   const { make, model, minYear, zip } = req.body;
@@ -24,23 +40,22 @@ pgController.getCarsComData = async (req, res, next) => {
   
 // })
 
-pgController.insertCarsComData = (req, res, next) => {
-  const { carsComData } = res.locals;
-  carsComData.map(car => {
-    const { price, image, mileage, year, make, model, url } = car
-    const VALUES = [price, image, mileage, year, make, model, url]
-    const queryStr = `UPSERT INTO cars (price, image, mileage, year, make, model, url)
-                      VALUES($1, $2, $3, $4, $5, $6, $7)`
-    db.query(queryStr, VALUES)
-  })
-  
-  db.query(queryStr)
-    .then(data => {
-      // do stuff with the data or something
-      return next();
-    })
-    .catch(err => (next(err)));
-}
+// pgController.insertCarsComData = (req, res, next) => {
+//   const { carsComData } = res.locals;
+
+//   //carsComData.forEach(car => {
+//     const { price, image, mileage, year, make, model, url, zip, date } = car;
+//     const VALUES = [price, image, mileage, year, make, model, url, zip, date]
+//     const queryStr = `INSERT INTO cars(price, image, mileage, year, make, model, url, zip, date)
+//                       VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9)`
+//     db.query(queryStr, VALUES)
+//       .then(res => {
+//         console.log(res.rows)
+//         return next()
+//       })
+//       .catch(err => next(err));
+//   //})
+// }
 
 
 // add controllers
