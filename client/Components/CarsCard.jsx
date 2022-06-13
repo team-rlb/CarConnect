@@ -5,14 +5,15 @@ import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
 import { Button, CardActionArea, CardActions } from '@mui/material';
 
-export default function MultiActionAreaCard() {
+export default function MultiActionAreaCard(props) {
+  const carDetails = props.carObj;
   return (
     <Card sx={{ maxWidth: 500 }}>
       <CardActionArea>
         <CardMedia
           component="img"
           height="200"
-          image="https://static.wikia.nocookie.net/0b6408dc-ead8-42d9-a639-94068519d635/scale-to-width/755"
+          image={carDetails.image ? carDetails.image : "https://static.wikia.nocookie.net/0b6408dc-ead8-42d9-a639-94068519d635/scale-to-width/755"}
           alt="car photo"
         />
         <CardContent sx={{
@@ -29,14 +30,14 @@ export default function MultiActionAreaCard() {
             marginLeft: 3
           }}
           gutterBottom variant="h4" component="div">
-            Honda Civic
+            {`${carDetails.make} ${carDetails.model}`}
           </Typography>
           <Typography sx={{
             gridColumn: '2/3',
             gridRow: '1/2'
           }}
           variant="h5" color="text.secondary">
-            $14,999
+            {`$${carDetails.price}`}
           </Typography>
           <Typography 
           sx={{
@@ -44,7 +45,7 @@ export default function MultiActionAreaCard() {
             gridRow: '2/3'
           }}
           variant="body2" color="text.secondary">
-            500,000 mileage
+            {`${carDetails.mileage} mileage`}
           </Typography>
           <Typography 
           sx={{
@@ -52,7 +53,7 @@ export default function MultiActionAreaCard() {
             gridRow: '3/4'
           }}
           variant="body2" color="text.secondary">
-            Year: 2015
+            {`Year: ${carDetails.year}`}
           </Typography>
           <Typography 
           sx={{
@@ -60,13 +61,13 @@ export default function MultiActionAreaCard() {
             gridRow: '4/5'
           }}
           variant="body2" color="text.secondary">
-            ZIP: 10001
+            {`ZIP: ${carDetails.zip}`}
           </Typography>
         </CardContent>
       </CardActionArea>
       <CardActions>
         <Button size="small" color="primary">
-          Check in the website
+          <a href={`${carDetails.url}`}>Check in the website</a>
         </Button>
       </CardActions>
     </Card>

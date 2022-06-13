@@ -4,10 +4,7 @@ import ListItem from '@mui/material/ListItem';
 import ListSubheader from '@mui/material/ListSubheader';
 import CarsCards from './CarsCard';
 
-export default function CarsList() {
-
-
-
+export default function CarsList(props) {
 
   return (
     <List
@@ -23,33 +20,13 @@ export default function CarsList() {
       subheader={<li />}
     >
     <ListSubheader>Cars.com</ListSubheader>
-    <ListItem>
-      <CarsCards />
-    </ListItem>
-    <ListItem>
-      <CarsCards />
-    </ListItem>
-    <ListItem>
-      <CarsCards />
-    </ListItem>
-    <ListItem>
-      <CarsCards />
-    </ListItem>
-    <ListItem>
-      <CarsCards />
-    </ListItem>
-    <ListItem>
-      <CarsCards />
-    </ListItem>
-    <ListItem>
-      <CarsCards />
-    </ListItem>
-    <ListItem>
-      <CarsCards />
-    </ListItem>
-    <ListItem>
-      <CarsCards />
-    </ListItem>
+    {
+      props.carsArr.map(car => {
+        <ListItem>
+          <CarsCards carObj={car}/>
+        </ListItem>
+      })
+    }
     </List>
   );
 }

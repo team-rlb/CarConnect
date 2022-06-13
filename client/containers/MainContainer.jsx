@@ -24,7 +24,7 @@ const MainContainer = () => {
             <Tab label="Trends" />
           </Tabs>
         </Box>
-        <CarsList />
+        <CarsInfo />
         </>
     );
 }
