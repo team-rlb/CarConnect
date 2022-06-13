@@ -3,6 +3,7 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListSubheader from '@mui/material/ListSubheader';
 import CarsCard from './CarsCard';
+import Typography from '@mui/material/Typography';
 
 export default function CarsList(props) {
   console.log('carsArr', props)
@@ -21,7 +22,7 @@ export default function CarsList(props) {
     <List
       sx={{
         width: '100%',
-        maxWidth: 400,
+        maxWidth: 500,
         bgcolor: 'background.paper',
         position: 'relative',
         overflow: 'auto',
@@ -30,7 +31,20 @@ export default function CarsList(props) {
       }}
       subheader={<li />}
     >
-    <ListSubheader>Cars.com</ListSubheader>
+    <ListSubheader sx={{
+      display: "flex",
+      justifyContent: 'center',
+        padding: '10px 0',
+        maxWidth: 500,
+        border: '1px solid #e0e0e0',
+        boxShadow: '0px 11px 10px -7px rgba(194,194,194,0.66)'
+    }}>
+      <Typography variant="h4" sx={{
+        color: 'black'
+      }}>
+        {props.name}
+      </Typography>
+    </ListSubheader>
     {[carsItems]}
     </List>
   );

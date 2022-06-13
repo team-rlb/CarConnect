@@ -3,7 +3,8 @@ const puppeteer = require('puppeteer');
 // carsDotComScraper = require('../scrapers/carsDotComScraper')
 const carsDotComScraper = require('../scrapers/carsDotComScraper.js')
 const autoTraderScraper = require('../scrapers/autoTraderScraper.js')
-const carGurusScraper = require('../scrapers/carGurusScraper.js')
+const carGurusScraper = require('../scrapers/carGurusScraper.js');
+const trueCarScraper = require('../scrapers/trueCarScraper.js');
 
 
 const pgController = {};
@@ -26,6 +27,13 @@ pgController.getAutoTraderData = async (req, res, next) => {
  pgController.getCarGurusData = async (req, res, next) => {
   const { make, model, minYear, zip } = req.params;
   res.locals.carGurusData = await carGurusScraper(make, model, minYear, zip);
+ 
+  return next();
+ }
+
+ pgController.getTrueCarData = async (req, res, next) => {
+  const { make, model, minYear, zip } = req.params;
+  res.locals.trueCarData = await trueCarScraper(make, model, minYear, zip);
  
   return next();
  }
@@ -59,8 +67,7 @@ pgController.insertCarsComData = async (req, res, next) => {
 
   //------------------- CONCAT version below
 
-  let queryStr = `INSERT INTO cars(price, image, mileage, year, make, model, url, zip, date) VALUES`
-  console.log(queryStr)                    
+  let queryStr = `INSERT INTO cars(price, image, mileage, year, make, model, url, zip, date) VALUES`                 
   carsComData.forEach(car => {
     console.log('hello we are in the loop pls help')
     const { price, image, mileage, year, make, model, url, zip, date } = car;
@@ -71,7 +78,7 @@ pgController.insertCarsComData = async (req, res, next) => {
   queryStr += ';'
   //queryStr = queryStr.replace(/.$/, ';');
   console.log('last char is:', queryStr[queryStr.length-1]);
-  console.log(queryStr)
+
   await db.query(queryStr)
       .then(res => {
         console.log(res.rows)

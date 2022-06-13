@@ -21,11 +21,11 @@ const autoTraderScraper = async (make, model, minYear, zip) => {
         //         $(el).find('.padding-0 > .row > .item-card > .col-xs-12 > .positioned-overlay > .positioned-overlay-wrapper > .positioned-overlay-base > a > div > img').attr('src')
         //         : '' ;
         const titleElement = $(el).find('.row').find('.text-left').find('.text-bold');
-        console.log('hello Im title element', titleElement)
+        // console.log('hello Im title element', titleElement)
         const url = `autotrader.com${$(el).find('a').attr('href')}`;
-        console.log('are we here?', priceElement, mileageElement, image, titleElement, url)
+        // console.log('are we here?', priceElement, mileageElement, image, titleElement, url)
         vehicleObj.price = Number(priceElement.text().replace(/\D/g, ''));
-        vehicleObj.image = '';
+        vehicleObj.image = 'https://media.nbclosangeles.com/2021/10/Uber_StarCars_PRHero_SB_STREET_16x9-01.png?fit=1920%2C1080&quality=85&strip=all';
         vehicleObj.mileage = Number(mileageElement.text().replace(/\D/g, ''));
         vehicleObj.year = Number(titleElement.text().split(' ').slice(0, 4).join('').replace(/\D/g, '')); // [2015, Honda, Civic, LX]
         vehicleObj.model = model;
@@ -42,10 +42,10 @@ const autoTraderScraper = async (make, model, minYear, zip) => {
 }
 
 // cheerioScrapeCarsCom is working perfectly
- await cheerioScraperAutoTrader(`https://www.autotrader.com/cars-for-sale/all-cars/${make.toLowerCase()}/${model.toLowerCase()}/${zip}?searchRadius=50&startYear=${minYear}`);
+ await cheerioScraperAutoTrader(`https://www.autotrader.com/cars-for-sale/all-cars/${make.toLowerCase()}/${model.toLowerCase()}/${zip}?searchRadius=50&startYear=${minYear}&sortBy=derivedpriceASC&numRecords=50`);
  console.log('cars', cars, 'end cars')
  
- return cars;
+ return cars.slice(3);
 }
 
 
