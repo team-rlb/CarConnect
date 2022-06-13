@@ -2,10 +2,21 @@ import * as React from 'react';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListSubheader from '@mui/material/ListSubheader';
-import CarsCards from './CarsCard';
+import CarsCard from './CarsCard';
 
 export default function CarsList(props) {
+  console.log('carsArr', props)
 
+  const carsItems = []; 
+  
+  props.carsArr.forEach(
+    car => {
+      carsItems.push(<ListItem>
+        <CarsCard carObj={car}/>
+      </ListItem>)
+    }
+  )
+  
   return (
     <List
       sx={{
@@ -20,13 +31,7 @@ export default function CarsList(props) {
       subheader={<li />}
     >
     <ListSubheader>Cars.com</ListSubheader>
-    {
-      props.carsArr.map(car => {
-        <ListItem>
-          <CarsCards carObj={car}/>
-        </ListItem>
-      })
-    }
+    {[carsItems]}
     </List>
   );
 }

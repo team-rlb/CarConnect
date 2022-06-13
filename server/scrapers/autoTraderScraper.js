@@ -6,7 +6,6 @@ const autoTraderScraper = async (make, model, minYear, zip) => {
   cheerioScraperAutoTrader = async (url) => {
 // 
 
-  let data = {}
   await axios(url)
     .then(response => {
       const htmlData = response.data;
@@ -14,19 +13,19 @@ const autoTraderScraper = async (make, model, minYear, zip) => {
       const date = new Date();
       const actualDate = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
 
-      const scrape = $('.col-xs-12').find('.inventory-listing').map((i, el) => {    
+      $('.col-xs-12').find('.inventory-listing').map((i, el) => {    
         const vehicleObj = {};
         const priceElement = $(el).find('.first-price');
         const mileageElement = $(el).find('.item-card-specifications').find('.text-bold');
-        const image = $(el).find('.padding-0 > .row > .item-card > .col-xs-12 > .positioned-overlay > .positioned-overlay-wrapper > .positioned-overlay-base > a > div > img').attr('src') ? 
-                $(el).find('.padding-0 > .row > .item-card > .col-xs-12 > .positioned-overlay > .positioned-overlay-wrapper > .positioned-overlay-base > a > div > img').attr('src')
-                : '' ;
+        // const image = $(el).find('.padding-0 > .row > .item-card > .col-xs-12 > .positioned-overlay > .positioned-overlay-wrapper > .positioned-overlay-base > a > div > img').attr('src') ? 
+        //         $(el).find('.padding-0 > .row > .item-card > .col-xs-12 > .positioned-overlay > .positioned-overlay-wrapper > .positioned-overlay-base > a > div > img').attr('src')
+        //         : '' ;
         const titleElement = $(el).find('.row').find('.text-left').find('.text-bold');
-        
+        console.log('hello Im title element', titleElement)
         const url = `autotrader.com${$(el).find('a').attr('href')}`;
         console.log('are we here?', priceElement, mileageElement, image, titleElement, url)
         vehicleObj.price = Number(priceElement.text().replace(/\D/g, ''));
-        vehicleObj.image = image;
+        vehicleObj.image = '';
         vehicleObj.mileage = Number(mileageElement.text().replace(/\D/g, ''));
         vehicleObj.year = Number(titleElement.text().split(' ').slice(0, 4).join('').replace(/\D/g, '')); // [2015, Honda, Civic, LX]
         vehicleObj.model = model;
@@ -39,7 +38,7 @@ const autoTraderScraper = async (make, model, minYear, zip) => {
         
         })
       })
-      .catch(err => console.log(err, 'Error in carsDotComScraper function'));
+      .catch(err => console.log(err, 'Error in autoTraderScraper function'));
 }
 
 // cheerioScrapeCarsCom is working perfectly

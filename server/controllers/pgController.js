@@ -9,6 +9,7 @@ const carGurusScraper = require('../scrapers/carGurusScraper.js')
 const pgController = {};
 
 pgController.getCarsComData = async (req, res, next) => {
+ //console.log(req.params)
  const { make, model, minYear, zip } = req.params;
  res.locals.carsComData = await carsDotComScraper(make, model, minYear, zip);
 
@@ -24,7 +25,7 @@ pgController.getAutoTraderData = async (req, res, next) => {
 
  pgController.getCarGurusData = async (req, res, next) => {
   const { make, model, minYear, zip } = req.params;
-  res.locals.autoTraderData = await carGurusScraper(make, model, minYear, zip);
+  res.locals.carGurusData = await carGurusScraper(make, model, minYear, zip);
  
   return next();
  }
@@ -40,42 +41,43 @@ pgController.getAutoTraderData = async (req, res, next) => {
   
 // })
 
-pgController.insertCarsComData = (req, res, next) => {
+pgController.insertCarsComData = async (req, res, next) => {
   const { carsComData } = res.locals;
-
-
-  carsComData.forEach(car => {
-    const { price, image, mileage, year, make, model, url, zip, date } = car;
-    const VALUES = [price, image, mileage, year, make, model, url, zip, date]
-    const queryStr = `INSERT INTO cars(price, image, mileage, year, make, model, url, zip, date)
-                      VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9)`
-    db.query(queryStr, VALUES)
-    .then(res => {
-      console.log(res.rows)
-      return next()
-    })
-    .catch(err => next(err));
-    setTimeout(console.log('query done, waiting cuz we broke'), 1000);
-  })
-  // let queryStr = `INSERT INTO cars(price, image, mileage, year, make, model, url, zip, date) VALUES`
-  // console.log(queryStr)                    
   // carsComData.forEach(car => {
-  //   console.log('hello we are in the loop pls help')
   //   const { price, image, mileage, year, make, model, url, zip, date } = car;
-    
-  //   queryStr += `(${price}, ${image}, ${mileage}, ${year}, ${make}, ${model}, ${url}, ${zip}, ${date}),`
+  //   const VALUES = [price, image, mileage, year, make, model, url, zip, date]
+  //   const queryStr = `INSERT INTO cars(price, image, mileage, year, make, model, url, zip, date)
+  //                     VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9)`
+  //   db.query(queryStr, VALUES)
+  //   .then(res => {
+  //     console.log(res.rows)
+  //     return next()
+  //   })
+  //   .catch(err => next(err));
+  //   setTimeout(console.log('query done, waiting cuz we broke'), 1000);
   // })
-  // queryStr = queryStr.slice(0, -1);
-  // queryStr += ';'
-  // //queryStr = queryStr.replace(/.$/, ';');
-  // console.log('last char is:', queryStr[queryStr.length-1]);
-  // console.log(queryStr)
-  // db.query(queryStr)
-  //     .then(res => {
-  //       console.log(res.rows)
-  //       return next()
-  //     })
-  //     .catch(err => next(err));
+
+  //------------------- CONCAT version below
+
+  let queryStr = `INSERT INTO cars(price, image, mileage, year, make, model, url, zip, date) VALUES`
+  console.log(queryStr)                    
+  carsComData.forEach(car => {
+    console.log('hello we are in the loop pls help')
+    const { price, image, mileage, year, make, model, url, zip, date } = car;
+    
+    queryStr += `(${price}, ${image}, ${mileage}, ${year}, ${make}, ${model}, ${url}, ${zip}, ${date}),`
+  })
+  queryStr = queryStr.slice(0, -1);
+  queryStr += ';'
+  //queryStr = queryStr.replace(/.$/, ';');
+  console.log('last char is:', queryStr[queryStr.length-1]);
+  console.log(queryStr)
+  await db.query(queryStr)
+      .then(res => {
+        console.log(res.rows)
+        return next()
+      })
+      .catch(err => next(err));
 }
 
 
