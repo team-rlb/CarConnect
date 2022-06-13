@@ -26,7 +26,7 @@ const carsDotComScraper = async (make, model, minYear, zip) => {
         vehicleObj.price = Number(priceElement.text().replace(/\D/g, ''));
         vehicleObj.image = image;
         vehicleObj.mileage = Number(mileageElement.text().replace(/\D/g, ''));
-        [vehicleObj.year, vehicleObj.make, vehicleObj.model] = titleElement.text().split(' '); // [2015, Honda, Civic, LX]
+        [ vehicleObj.year, vehicleObj.make, vehicleObj.model ] = titleElement.text().split(' '); // [2015, Honda, Civic, LX]
         vehicleObj.year = Number(vehicleObj.year);
         vehicleObj.url = url;
         vehicleObj.zip = Number(zip);

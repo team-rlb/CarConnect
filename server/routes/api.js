@@ -6,6 +6,7 @@ const router = express.Router();
 router.get('/scrape',
   pgController.getCarsComData,
   pgController.getCarGurusData,
+  pgController.insertCarsComData,
   (req, res) => res.status(200).json({ carsComData: res.locals.carsComData, carGurusData: res.locals.carGurusData })
 );
 

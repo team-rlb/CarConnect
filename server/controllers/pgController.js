@@ -9,21 +9,21 @@ const carGurusScraper = require('../scrapers/carGurusScraper.js')
 const pgController = {};
 
 pgController.getCarsComData = async (req, res, next) => {
- const { make, model, minYear, zip } = req.body;
+ const { make, model, minYear, zip } = req.params;
  res.locals.carsComData = await carsDotComScraper(make, model, minYear, zip);
 
  return next();
 }
 
 pgController.getAutoTraderData = async (req, res, next) => {
-  const { make, model, minYear, zip } = req.body;
+  const { make, model, minYear, zip } = req.params;
   res.locals.autoTraderData = await autoTraderScraper(make, model, minYear, zip);
  
   return next();
  }
 
  pgController.getCarGurusData = async (req, res, next) => {
-  const { make, model, minYear, zip } = req.body;
+  const { make, model, minYear, zip } = req.params;
   res.locals.autoTraderData = await carGurusScraper(make, model, minYear, zip);
  
   return next();
@@ -40,22 +40,43 @@ pgController.getAutoTraderData = async (req, res, next) => {
   
 // })
 
-// pgController.insertCarsComData = (req, res, next) => {
-//   const { carsComData } = res.locals;
+pgController.insertCarsComData = (req, res, next) => {
+  const { carsComData } = res.locals;
 
-//   //carsComData.forEach(car => {
-//     const { price, image, mileage, year, make, model, url, zip, date } = car;
-//     const VALUES = [price, image, mileage, year, make, model, url, zip, date]
-//     const queryStr = `INSERT INTO cars(price, image, mileage, year, make, model, url, zip, date)
-//                       VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9)`
-//     db.query(queryStr, VALUES)
-//       .then(res => {
-//         console.log(res.rows)
-//         return next()
-//       })
-//       .catch(err => next(err));
-//   //})
-// }
+
+  carsComData.forEach(car => {
+    const { price, image, mileage, year, make, model, url, zip, date } = car;
+    const VALUES = [price, image, mileage, year, make, model, url, zip, date]
+    const queryStr = `INSERT INTO cars(price, image, mileage, year, make, model, url, zip, date)
+                      VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9)`
+    db.query(queryStr, VALUES)
+    .then(res => {
+      console.log(res.rows)
+      return next()
+    })
+    .catch(err => next(err));
+    setTimeout(console.log('query done, waiting cuz we broke'), 1000);
+  })
+  // let queryStr = `INSERT INTO cars(price, image, mileage, year, make, model, url, zip, date) VALUES`
+  // console.log(queryStr)                    
+  // carsComData.forEach(car => {
+  //   console.log('hello we are in the loop pls help')
+  //   const { price, image, mileage, year, make, model, url, zip, date } = car;
+    
+  //   queryStr += `(${price}, ${image}, ${mileage}, ${year}, ${make}, ${model}, ${url}, ${zip}, ${date}),`
+  // })
+  // queryStr = queryStr.slice(0, -1);
+  // queryStr += ';'
+  // //queryStr = queryStr.replace(/.$/, ';');
+  // console.log('last char is:', queryStr[queryStr.length-1]);
+  // console.log(queryStr)
+  // db.query(queryStr)
+  //     .then(res => {
+  //       console.log(res.rows)
+  //       return next()
+  //     })
+  //     .catch(err => next(err));
+}
 
 
 // add controllers
@@ -69,7 +90,7 @@ pgController.getSavedData = (req, res, next) => {
   WHERE c.make = "Honda";`
   //I'm having problems with the query string, if you get rid of everything after the 'WHERE' it will return all two tables mixed, but if I specify what I just want the make Honda it crashes
 
-  db.query(queryStr)
+   db.query(queryStr)
     .then(carInfo => {
       console.log(carInfo.rows)
       return next();
