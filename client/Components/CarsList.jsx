@@ -6,8 +6,6 @@ import CarsCard from './CarsCard';
 import Typography from '@mui/material/Typography';
 
 export default function CarsList(props) {
-  console.log('carsArr', props)
-
   const carsItems = []; 
   
   props.carsArr.forEach(
